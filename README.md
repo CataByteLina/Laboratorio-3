@@ -65,7 +65,45 @@ def normalize_signal(signal):
     return (signal / max_val * 32767).astype(np.int16) if max_val > 0 else np.zeros_like(signal, dtype=np.int16)
 voice_selected = normalize_signal(voice_selected)
  ```
+## Uso del beamforming
+En el caso del beamforming se usa correlación cruzada para alinear todas las señales temporalmente (esto se hace ya que los microfonos no se encendieron exactamente al mismo tiempo por lo que puede haber un pequeño delay entre las señales), una vez se encuentra el desfase, se recorta la señal si está atrasada o se aplica un delay si está adelantada, luego se almacenan en una matriz y se asegura que tengan la misma longitud.
+Despues se promedian las señales y se normalizan, esto para evitar que se vaya a distorsionar el audio y se disminuya el ruido.
+```
+def beamforming(signals):
+    """
+    Aplica Delay-and-Sum Beamforming a una lista de señales.
+    """
+    max_lag = 20  # Máximo retardo en muestras para alineación
+    reference_signal = signals[0]  # Usamos la primera señal como referencia
+
+    aligned_signals = []
+    for signal in signals:
+        corr = correlate(reference_signal, signal, mode="full")  # Correlación cruzada
+        lag = np.argmax(corr) - (len(signal) - 1)
+        lag = np.clip(lag, -max_lag, max_lag)  # Limitar el retardo máximo
+
+        # Desplazar la señal
+        if lag > 0:
+            aligned_signal = np.pad(signal, (lag, 0), mode="constant")[:len(signal)]
+        else:
+            aligned_signal = np.pad(signal, (0, -lag), mode="constant")[:len(signal)]
+
+        aligned_signals.append(aligned_signal)
+
+    # Convertir a array y asegurar misma longitud
+    aligned_signals = np.array(aligned_signals)
+    beamformed_signal = np.mean(aligned_signals, axis=0)
+
+    return normalize_signal(beamformed_signal)
 
 
+# Aplicar beamforming usando las señales separadas
+beamformed_voice = beamforming(S_.T)
+
+# Guardar la señal con beamforming
+wav.write("voz_beamforming.wav", sample_rate_L, beamformed_voice)
+
+print("Se han guardado los archivos 'voz_separada.wav' y 'voz_beamforming.wav'.")
+```
 
 
