@@ -9,6 +9,31 @@ Se distribuyeron 3 micrófonos en una sala insonorizada de forma tal que captura
 Cada persona debe decir una frase diferente durante el tiempo de grabación de la señal, en este caso se utilizará la captura correspondiente a 17,5 segundos, se utilizarón para la captura 3 celulares de referencia Samsung A12, Samsung A34 Y un Samsung A55, con la aplicación predeterminada de grabación de audio.
 
 Se calculó el SNR de cada señal
+```
+sample_rate_L, data_L = wav.read(audioL)
+sample_rate_P, data_P = wav.read(audioP)
+sample_rate_C, data_C = wav.read(audioC)
+sample_rate_amb, data_amb = wav.read(audio_amb)
+
+def calcular_snr(signal, noise):
+    pseñal = np.mean(signal ** 2) #potencia de la señal
+    # Calcular la potencia del ruido
+    pruido = np.mean(noise ** 2) #potencia del ruido
+    # Calcular la SNR
+    snr = 10 * np.log10(pseñal / pruido)
+    return snr
+
+# Calcular la SNR para cada archivo
+snr_L = calcular_snr(data_L, data_amb)
+snr_P = calcular_snr(data_P, data_amb)
+snr_C = calcular_snr(data_C, data_amb)
+```
+
+![image](https://github.com/user-attachments/assets/830c4f95-ee1e-4b68-bbcc-2aea0eb86b8c)
+
+Los SNR salieron bajos (menores a 10dB) ya que, aunque era una habitación insonorizada, las voces de las otras dos personas pueden actuar como ruido no deseado desde la perspectiva de cada grabación individual teniendo en cuenta su distancia a las fuentes de sonido, siendo así que las otras voces se interpretan como ruido. Además, los micrófonos de los celulares no son direccionales, por lo que captan todas las voces en el ambiente.
+
+
 
 
 
