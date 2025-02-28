@@ -1,0 +1,177 @@
+import numpy as np
+import scipy.io.wavfile as wav
+import matplotlib.pyplot as plt
+from sklearn.decomposition import FastICA
+from scipy.signal import correlate
+from scipy.fftpack import fft
+
+# Cargar archivos de audio
+audioL = "intento-1-Laura (mp3cut.net).wav"
+audioP = "intento-1-Pablo (mp3cut.net).wav"
+audioC = "intento-1-Catalina (mp3cut.net).wav"
+audio_amb = "ruido-ambiente-Catalina (mp3cut.net).wav"
+
+# Leer archivos de audio
+sample_rate_L, data_L = wav.read(audioL)
+sample_rate_P, data_P = wav.read(audioP)
+sample_rate_C, data_C = wav.read(audioC)
+sample_rate_amb, data_amb = wav.read(audio_amb)
+
+# Convertir a mono para tomar un solo canal, para tener compatibilitad con FastICA
+def to_mono(data):
+    return data[:, 0] if len(data.shape) > 1 else data
+
+data_L, data_P, data_C, data_amb = map(to_mono, [data_L, data_P, data_C, data_amb])
+
+# Asegurar misma longitud de señales
+min_length = min(len(data_L), len(data_P), len(data_C), len(data_amb))
+data_L, data_P, data_C, data_amb = [d[:min_length] for d in [data_L, data_P, data_C, data_amb]]
+
+# Crear matriz de mezclas
+X = np.vstack([data_L, data_P, data_C]).T  # Transpuesta para formato correcto
+
+# Aplicar FastICA
+ica = FastICA(n_components=3, random_state=42)
+S_ = ica.fit_transform(X)  # Separar fuentes
+
+# Seleccionar una voz separada
+voice_selected = S_[:, 0]  # Puedes cambiar entre 0, 1 o 2 para elegir la mejor
+
+# Normalizar la señal
+def normalize_signal(signal):
+    max_val = np.max(np.abs(signal))
+    return (signal / max_val * 32767).astype(np.int16) if max_val > 0 else np.zeros_like(signal, dtype=np.int16)
+
+voice_selected = normalize_signal(voice_selected)
+
+# Guardar la voz separada sin beamforming
+wav.write("voz_separada.wav", sample_rate_L, voice_selected)
+
+# ---- APLICAR BEAMFORMING ----
+def beamforming(signals):
+    """
+    Aplica Delay-and-Sum Beamforming a una lista de señales.
+    """
+    max_lag = 20  # Máximo retardo en muestras para alineación
+    reference_signal = signals[0]  # Usamos la primera señal como referencia
+    
+    aligned_signals = []
+    for signal in signals:
+        corr = correlate(reference_signal, signal, mode="full")  # Correlación cruzada
+        lag = np.argmax(corr) - (len(signal) - 1)
+        lag = np.clip(lag, -max_lag, max_lag)  # Limitar el retardo máximo
+        
+        # Desplazar la señal
+        if lag > 0:
+            aligned_signal = np.pad(signal, (lag, 0), mode="constant")[:len(signal)]
+        else:
+            aligned_signal = np.pad(signal, (0, -lag), mode="constant")[:len(signal)]
+        
+        aligned_signals.append(aligned_signal)
+    
+    # Convertir a array y asegurar misma longitud
+    aligned_signals = np.array(aligned_signals)
+    beamformed_signal = np.mean(aligned_signals, axis=0)
+    
+    return normalize_signal(beamformed_signal)
+
+# Aplicar beamforming usando las señales separadas
+beamformed_voice = beamforming(S_.T)
+
+# Guardar la señal con beamforming
+wav.write("voz_beamforming.wav", sample_rate_L, beamformed_voice)
+
+print("Se han guardado los archivos 'voz_separada.wav' y 'voz_beamforming.wav'.")
+
+# ---- GRAFICAR SEÑALES ----
+def plot_signal_and_spectrum(signal, sample_rate, title):
+    """
+    Grafica la señal en el dominio del tiempo y su espectro de frecuencia.
+    """
+    time = np.linspace(0, len(signal) / sample_rate, num=len(signal))
+
+    # Aplicar FFT y calcular la magnitud del espectro
+    freq = np.fft.fftfreq(len(signal), 1 / sample_rate)
+    spectrum = np.abs(fft(signal))
+
+    # Crear una nueva figura para cada señal
+    plt.figure(figsize=(12, 6))
+
+    # Gráfico de la señal en el tiempo
+    plt.subplot(2, 1, 1)
+    plt.plot(time, signal, color='b')
+    plt.xlabel("Tiempo (s)")
+    plt.ylabel("Amplitud")
+    plt.title(f"Señal en el Tiempo: {title}")
+
+    # Gráfico del espectro de frecuencia
+    plt.subplot(2, 1, 2)
+    plt.plot(freq[:len(freq)//2], spectrum[:len(spectrum)//2], color='r')  # Solo parte positiva
+    plt.xlabel("Frecuencia (Hz)")
+    plt.ylabel("Magnitud")
+    plt.title(f"Espectro de Frecuencia: {title}")
+
+    plt.tight_layout()
+    plt.show()
+
+# Llamar a la función para cada micrófono
+plot_signal_and_spectrum(data_L, sample_rate_L, "Micrófono 1 (Laura)")
+plot_signal_and_spectrum(data_P, sample_rate_P, "Micrófono 2 (Pablo)")
+plot_signal_and_spectrum(data_C, sample_rate_C, "Micrófono 3 (Catalina)")
+
+
+def plot_signal_and_spectrum(signal, sample_rate, title):
+    """
+    Grafica la señal en el tiempo y su espectro de frecuencia.
+    """
+    time = np.linspace(0, len(signal) / sample_rate, num=len(signal))
+
+    # Transformada de Fourier
+    freq = np.fft.fftfreq(len(signal), 1 / sample_rate)
+    spectrum = np.abs(fft(signal))
+
+    plt.figure(figsize=(12, 5))
+
+    # Señal en el tiempo
+    plt.subplot(1, 2, 1)
+    plt.plot(time, signal, color='b')
+    plt.xlabel("Tiempo (s)")
+    plt.ylabel("Amplitud")
+    plt.title(f"Señal en el tiempo: {title}")
+
+    # Espectro en frecuencia
+    plt.subplot(1, 2, 2)
+    plt.plot(freq[:len(freq)//2], spectrum[:len(spectrum)//2], color='r')  # Solo parte positiva
+    plt.xlabel("Frecuencia (Hz)")
+    plt.ylabel("Amplitud")
+    plt.title(f"Espectro de frecuencia: {title}")
+
+    plt.tight_layout()
+    plt.show()
+
+# Graficar ambas señales procesadas
+plot_signal_and_spectrum(voice_selected, sample_rate_L, "Voz Separada (FastICA)")
+plot_signal_and_spectrum(beamformed_voice, sample_rate_L, "Voz con Beamforming")
+def calculate_snr(signal, noise):
+    """
+    Calcula la Relación Señal-Ruido (SNR) en decibeles (dB).
+    """
+    signal_power = np.mean(signal ** 2)
+    noise_power = np.mean(noise ** 2)
+    
+    if noise_power == 0:
+        return np.inf  # Evitar división por cero
+
+    return 10 * np.log10(signal_power / noise_power)
+
+# SNR antes de FastICA y beamforming
+snr_before = calculate_snr(data_L, data_amb)
+print(f"SNR antes del procesamiento: {snr_before:.2f} dB")
+
+# SNR después de FastICA
+snr_after_ica = calculate_snr(voice_selected, data_amb[:len(voice_selected)])
+print(f"SNR después de FastICA: {snr_after_ica:.2f} dB")
+
+# SNR después de beamforming
+snr_after_beamforming = calculate_snr(beamformed_voice, data_amb[:len(beamformed_voice)])
+print(f"SNR después de beamforming: {snr_after_beamforming:.2f} dB")
