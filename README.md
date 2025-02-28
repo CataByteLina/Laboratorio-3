@@ -67,8 +67,8 @@ voice_selected = normalize_signal(voice_selected)
  ```
 ## Uso del beamforming
 En el caso del beamforming se usa correlación cruzada para alinear todas las señales temporalmente (esto se hace ya que los microfonos no se encendieron exactamente al mismo tiempo por lo que puede haber un pequeño delay entre las señales), una vez se encuentra el desfase, se recorta la señal si está atrasada o se aplica un delay si está adelantada, luego se almacenan en una matriz y se asegura que tengan la misma longitud.
-
-Para hallar el maximo delay se debe tener en cuenta tanto la disposición de los micrófonos como su frecuencia de muestreo, siguiendo la siguiente ecuación:
+>[!TIP]
+>Para hallar el maximo delay se debe tener en cuenta tanto la disposición de los micrófonos como su frecuencia de muestreo, >siguiendo la siguiente ecuación:
 
 ![image](https://github.com/user-attachments/assets/e621bdd4-25d1-4619-bdfe-a15634868710)
 
