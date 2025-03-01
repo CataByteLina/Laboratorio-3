@@ -33,6 +33,27 @@ snr_C = calcular_snr(data_C, data_amb)
 
 Los SNR salieron bajos (menores a 10dB) ya que, aunque era una habitación insonorizada, las voces de las otras dos personas pueden actuar como ruido no deseado desde la perspectiva de cada grabación individual teniendo en cuenta su distancia a las fuentes de sonido, siendo así que las otras voces se interpretan como ruido. Además, los micrófonos de los celulares no son direccionales, por lo que captan todas las voces en el ambiente.
 
+Posteriormente para realizar el análisis espectral se utilizo la transformada de Fourier discreta (DFT).
+```
+def plot_signal_and_spectrum(signal, sample_rate, title):
+    
+    DFT
+    
+    time = np.linspace(0, len(signal) / sample_rate, num=len(signal))
+
+    # Aplicar FFT y calcular la magnitud del espectro
+    freq = np.fft.fftfreq(len(signal), 1 / sample_rate)
+    spectrum = np.abs(fft(signal))
+
+    # Crear una nueva figura para cada señal
+    plt.figure(figsize=(12, 6))
+
+
+    plt.title(f"Espectro de Frecuencia: {title}")
+
+    plt.tight_layout()
+    plt.show()
+```
 ## Uso del ICA
 Para implementar este método el audio debe ser mono, por lo que se pasan todos loas audios a este formato, adicionalmente se recortan todos los audios para que queden con la misma longitud.
 Después de esto, se guardan los 3 archivos de audio en una matriz de mezclas.
