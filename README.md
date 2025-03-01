@@ -173,7 +173,37 @@ wav.write("voz_beamforming.wav", sample_rate_L, beamformed_voice)
 print("Se han guardado los archivos 'voz_separada.wav' y 'voz_beamforming.wav'.")
 ```
 ## Calculo del snr y conclusiones.
+Después de aplicar ambos métodos se calcularon los respectivos SNR.
+```
+def calculate_snr(signal, noise):
+    
+    signal_power = np.mean(signal ** 2)
+    noise_power = np.mean(noise ** 2)
 
+    if noise_power == 0:
+        return np.inf  # Evitar división por cero
+
+    return 10 * np.log10(signal_power / noise_power)
+
+
+# SNR antes de FastICA y beamforming
+snr_before = calculate_snr(data_L, data_amb)
+print(f"SNR antes del procesamiento: {snr_before:.2f} dB")
+
+# SNR después de FastICA
+snr_after_ica = calculate_snr(voice_selected, data_amb[:len(voice_selected)])
+print(f"SNR después de FastICA: {snr_after_ica:.2f} dB")
+
+# SNR después de beamforming
+snr_after_beamforming = calculate_snr(beamformed_voice, data_amb[:len(beamformed_voice)])
+print(f"SNR después de beamforming: {snr_after_beamforming:.2f} dB")
+```
+Estos fueron los resultados:
+
+![image](https://github.com/user-attachments/assets/3fc9f653-e6f3-4ad2-9f9b-4c36d1f9f78c)
+Ambos SNR dieron negativo, esto es debido a que el SNR se calculó respecto al ruido ambiente grabado, y despues de aplicar ambos métodos de separacion de señales, los audios resultantes tienen menor intensidad que el ruido ambiente original, sin embargo los audios son inteligibles.
+
+Según la medición del SNR el método ICA produjo menos ruido, también se observó que cada uno de los métodos tiene sus ventajas y desventajas, en el caso del ICA funciona bastante bien pero a diferencia del beamforming que usa correlación cruzada para ajustar las señales en el tiempo, en el ICA dependes de que las grabaciones se hayan iniciado al mismo tiempo, por otra parte el beamforming depende mucho del posicionamiento de las fuentes de sonido, por lo que funcionó mejor para separar unas voces que otras dependiendo de los ángulos de la fuente respecto a los micrófonos.
 
 ## Colaboradores
 * Catalina Martinez 
