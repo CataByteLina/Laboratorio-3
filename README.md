@@ -201,10 +201,14 @@ print(f"SNR después de beamforming: {snr_after_beamforming:.2f} dB")
 Estos fueron los resultados:
 
 ![image](https://github.com/user-attachments/assets/3fc9f653-e6f3-4ad2-9f9b-4c36d1f9f78c)
+![image](https://github.com/user-attachments/assets/0f88426a-7269-433a-be59-49cdf2bc8348)
+![image](https://github.com/user-attachments/assets/71bb9517-8b21-4757-9119-6bdde820d2f2)
+
 Ambos SNR dieron negativo, esto es debido a que el SNR se calculó respecto al ruido ambiente grabado, y despues de aplicar ambos métodos de separacion de señales, los audios resultantes tienen menor intensidad que el ruido ambiente original, sin embargo los audios son inteligibles.
 
 Según la medición del SNR el método ICA produjo menos ruido, también se observó que cada uno de los métodos tiene sus ventajas y desventajas, en el caso del ICA funciona bastante bien pero a diferencia del beamforming que usa correlación cruzada para ajustar las señales en el tiempo, en el ICA dependes de que las grabaciones se hayan iniciado al mismo tiempo, por otra parte el beamforming depende mucho del posicionamiento de las fuentes de sonido, por lo que funcionó mejor para separar unas voces que otras dependiendo de los ángulos de la fuente respecto a los micrófonos.
-
+## Bibliografía
+Scikit Learn. (sf). Blind source separation using FastICA ]. GitHub. [https://github.com/tensorflow/tensorflow](https://scikit-learn.org/stable/auto_examples/decomposition/plot_ica_blind_source_separation.html)
 ## Colaboradores
 * Catalina Martinez 
 * Pablo Acevedo
