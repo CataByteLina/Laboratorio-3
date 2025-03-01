@@ -1,6 +1,6 @@
 # Laboratorio-3-Fiesta-de-Coctel
 
-En este laboratorio se implementan dos métodos de procesamiento digital de señales, el Independent component analysis (ICA) y el beamforming para solucionar el problema conocido como Fiste de Cóctel, donde se busca separar la voz de una persona en específico de las demás que están hablando en una habitación.
+En este laboratorio se implementan dos métodos de procesamiento digital de señales, el Independent component analysis (ICA) y el beamforming para solucionar el problema conocido como Fista de Cóctel, donde se busca separar la voz de una persona en específico de las demás que están hablando en una habitación.
 
 1. Configuración del sistema:
 Se distribuyeron 3 micrófonos en una sala insonorizada de forma tal que capturarón diferentes combinaciones de las señales de las 3 voces de las personas que estarán hablando a la vez, cada una de estas personas en posiciones fijas con diferentes distancias entre sí y los micrófonos para generar el ambiente de "fiesta de cóctel".
@@ -222,13 +222,15 @@ Estos fueron los resultados:
 ![image](https://github.com/user-attachments/assets/71bb9517-8b21-4757-9119-6bdde820d2f2)
 
 
-Ambos SNR dieron negativo, esto es debido a que el SNR se calculó respecto al ruido ambiente grabado, y después de aplicar ambos métodos de separacion de señales, los audios resultantes tienen menor intensidad que el ruido ambiente original, sin embargo los audios son inteligibles.
+Ambos SNR dieron negativo, esto es debido a que el SNR se calculó respecto al ruido ambiente grabado, y después de aplicar ambos métodos de separacion de señales, los audios resultantes tienen menor intensidad que el ruido ambiente original, sin embargo los audios son inteligibles, ya que se logra diferenciar palabras u oraciones de cada sujeto, sin embargo no fue un resultado ideal.
 
 Según la medición del SNR el método ICA produjo menos ruido, también se observó que cada uno de los métodos tiene sus ventajas y desventajas, en el caso del ICA funciona bastante bien pero a diferencia del beamforming que usa correlación cruzada para ajustar las señales en el tiempo, en el ICA depende de que las grabaciones se hayan iniciado al mismo tiempo, por otra parte el beamforming depende mucho del posicionamiento de las fuentes de sonido, por lo que funcionó mejor para separar unas voces que otras dependiendo de los ángulos de la fuente respecto a los micrófonos.
 
 ## Bibliografía
 Scikit Learn. (sf). Blind source separation using FastICA ]. 
+
 GitHub. [https://github.com/tensorflow/tensorflow]
+
 (https://scikit-learn.org/stable/auto_examples/decomposition/plot_ica_blind_source_separation.html)
 
 ## Colaboradores
