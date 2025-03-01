@@ -78,7 +78,12 @@ Se usó la transformada rápida de fourier para pasarlo al dominio de la frecuen
 ```
 ![image](https://github.com/user-attachments/assets/f3b72719-ee15-42c2-b5be-2e24befc336d)
 ![image](https://github.com/user-attachments/assets/aec9c4b4-c963-44b1-bd48-9beb710ec5bd)
-![image](https://github.com/user-attachments/assets/729d8e1c-e582-4c4e-89c8-03271293d5bd)
+![image](https://github.com/user-attachments/assets/154ceb67-60b6-4ae3-8871-78c12c9e8f83)
+Como se puede ver la escala de la amplitud al pasarlo al dominio de la frecuencia es muy grande por lo que es más conveniente usar una escala logaritmica en decibeles, tomamos como punto de referencia la media de la señal de ruido ambiente, y se obtuvieron las siguientes gráficas:
+![image](https://github.com/user-attachments/assets/ee7b8550-ad9c-4f3f-8001-2d222f669ccc)
+![image](https://github.com/user-attachments/assets/11db5039-abf0-4233-8ca3-6f1d2a3052f8)
+![image](https://github.com/user-attachments/assets/e9030c4e-1fcc-43d9-9a11-af80db8a93cf)
+
 
 
 ## Uso del ICA
