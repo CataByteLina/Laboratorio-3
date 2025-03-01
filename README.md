@@ -6,7 +6,7 @@ En este laboratorio se implementan dos metodos de procesamiento digital de seña
 Se distribuyeron 3 micrófonos en una sala insonorizada de forma tal que capturarón diferentes combinaciones de las señales de las 3 voces de las personas que estarán hablando a la vez, cada una de estas personas en posiciones fijas con diferentes distancias entre sí y los micrófonos para generar el ambiente de "fiesta de cóctel".
 
 2. Captura de la señal:
-Cada persona debe decir una frase diferente durante el tiempo de grabación de la señal, en este caso se utilizará la captura correspondiente a 17,5 segundos, se utilizarón para la captura 3 celulares de referencia Samsung A12, Samsung A34 Y un Samsung A55, con la aplicación predeterminada de grabación de audio.
+Cada persona debe decir una frase diferente durante el tiempo de grabación de la señal, en este caso se utilizará la captura correspondiente a 17,5 segundos, se utilizarón para la captura 3 celulares de referencia Samsung A12, Samsung A34 Y un Samsung A55, con la aplicación predeterminada de grabación de audio. La frecuencia de muestreo fue de 44100 Hz
 
 Se calculó el SNR de cada señal
 ```
@@ -54,6 +54,33 @@ def plot_signal_and_spectrum(signal, sample_rate, title):
     plt.tight_layout()
     plt.show()
 ```
+## Procesamiento de las señales
+La señal de cada micrófono se graficó tanto en el dominio del tiempo como en de la frecuencia.
+Debido a que es una señal digital de audio, su amplitud representa un numero de bits, la intensidad sonora del audio al reproducirse depende del dispositivo que se use para tal fin
+```
+ # Gráfico de la señal en el tiempo
+    plt.subplot(2, 1, 1)
+    plt.plot(time, signal, color='b')
+    plt.xlabel("Tiempo (s)")
+    plt.ylabel("Amplitud")
+    plt.title(f"Señal en el Tiempo: {title}")
+```
+Se usó la transformada rápida de fourier para pasarlo al dominio de la frecuencia, observando las gráficas obtenidas se confirma que el componente principal de la señal es de baja frecuencia, esto tiene sentido ya que la frecuencia de la voz humana varía de entre 80 Hz a 300 Hz
+```
+# Gráfico del espectro de frecuencia
+    plt.subplot(2, 1, 2)
+    plt.plot(freq[:len(freq) // 2], spectrum[:len(spectrum) // 2], color='r')  # Solo parte positiva
+    plt.xlabel("Frecuencia (Hz)")
+    plt.ylabel("Magnitud")
+    plt.title(f"Espectro de Frecuencia: {title}")
+    plt.tight_layout()
+    plt.show()
+```
+![image](https://github.com/user-attachments/assets/f3b72719-ee15-42c2-b5be-2e24befc336d)
+![image](https://github.com/user-attachments/assets/aec9c4b4-c963-44b1-bd48-9beb710ec5bd)
+![image](https://github.com/user-attachments/assets/729d8e1c-e582-4c4e-89c8-03271293d5bd)
+
+
 ## Uso del ICA
 Para implementar este método el audio debe ser mono, por lo que se pasan todos loas audios a este formato, adicionalmente se recortan todos los audios para que queden con la misma longitud.
 Después de esto, se guardan los 3 archivos de audio en una matriz de mezclas.
@@ -140,5 +167,6 @@ wav.write("voz_beamforming.wav", sample_rate_L, beamformed_voice)
 
 print("Se han guardado los archivos 'voz_separada.wav' y 'voz_beamforming.wav'.")
 ```
+## Calculo del snr y conclusiones.
 
 
