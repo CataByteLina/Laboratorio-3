@@ -175,3 +175,7 @@ print("Se han guardado los archivos 'voz_separada.wav' y 'voz_beamforming.wav'."
 ## Calculo del snr y conclusiones.
 
 
+## Colaboradores
+* Catalina Martinez 
+* Pablo Acevedo
+* Laura Avila
